@@ -18,17 +18,23 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "Serial/inc/cic.h"
+#include <QComboBox>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow),
-  settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation)
-           + QDir::separator() + "settings.ini", QSettings::IniFormat),
+  cic_(nullptr),
+  settings(nullptr),
+  //settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation)+ QDir::separator() + "settings.ini", QSettings::IniFormat),
   first(true),
   started(true)
 {
   srand(QDateTime::currentDateTime().toTime_t());
   ui->setupUi(this);
+
+  const QString configPath = "settings.ini";
+  settings = new QSettings(configPath, QSettings::IniFormat, this);
   
   ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
@@ -91,6 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->buttonAnalyze, SIGNAL(released()), this, SLOT(pressedAnalyze()));
   connect(ui->buttonSave, SIGNAL(released()), this, SLOT(pressedSave()));
 
+  //Combox
+  connect(ui->comboBox, SIGNAL(currentIndexChanged(int index)), this, SLOT(on_comboBox_currentIndexChanged(int index)));
+
+
   // Setup accelerometer
   accelerometer = new QAccelerometer(this);
   accelerometer->setAccelerationMode(QAccelerometer::Combined);
@@ -109,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
   button_disabled.setColor(QPalette::Button, QColor(Qt::lightGray));
 
   // Load previous settings
-  bool timed = settings.value("timed").toBool();
+  bool timed = settings->value("timed").toBool();
   ui->checkBoxTimed->setChecked(timed);
 
   // When we start the application, either start it automatically if we're
@@ -164,7 +174,7 @@ void MainWindow::start()
   ui->buttonStartStop->setText("Stop");
 
   // Save the last used setting
-  settings.setValue("timed", ui->checkBoxTimed->isChecked());
+  settings->setValue("timed", ui->checkBoxTimed->isChecked());
 
   // Clear old data
   ui->customPlot->graph(0)->removeDataAfter(0);
@@ -314,17 +324,59 @@ void MainWindow::realtimeDataSlot()
 
   if (key-lastPointKey > 0.01) // at most add point every 10 ms
   {
-    AccelerometerReadingDisplay reading = filter.get();
-    newData = reading.newData;
+    //AccelerometerReadingDisplay reading = filter.get();
+    //newData = reading.newData;
 
-    if (reading.newData)
-    {
-      ui->customPlot->graph(0)->addData(key, reading.x);
-      ui->customPlot->graph(1)->addData(key, reading.y);
-      ui->customPlot->graph(2)->addData(key, reading.z);
+    //added by sundy
+    //cic_->getData();
 
-      lastPointKey = key;
+    //if (reading.newData)
+//    if (cic_->new_data_){
+//      //get current node number
+
+//      Node curr_node;
+//      curr_node.ac_x = 2;
+//      curr_node.ac_y = 4;
+//      curr_node.ac_z = 6;
+//      switch(cur_index_){
+//        case 0:
+//          curr_node = cic_->nodeInfo[0];
+//          break;
+//      case 1:
+//          curr_node = cic_->nodeInfo[1];
+//          break;
+//      case 2:
+//          curr_node = cic_->nodeInfo[2];
+//          break;
+//      case 3:
+//          curr_node = cic_->nodeInfo[3];
+//          break;
+//      case 4:
+//          curr_node = cic_->nodeInfo[4];
+//          break;
+//      }
+//      double x = curr_node.ac_x;
+//      double y = curr_node.ac_y;
+//      double z = curr_node.ac_z;
+//      ui->customPlot->graph(0)->addData(key,x);
+//      ui->customPlot->graph(1)->addData(key,y);
+//      ui->customPlot->graph(2)->addData(key,z);
+//    }else{
+
+//      ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+//      ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+//      ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
+//      //ui->customPlot->graph(0)->addData(key, reading.x);
+//      //ui->customPlot->graph(1)->addData(key, reading.y);
+//      //ui->customPlot->graph(2)->addData(key, reading.z);
+//    }
+
+    if(cur_index_ == 2){
+        ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+        ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+        ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
     }
+    lastPointKey = key;
   }
 
   if (ui->customPlot->getPaused() == 0)
@@ -364,12 +416,26 @@ void MainWindow::realtimeDataSlot()
 
 void MainWindow::pressedStartStop()
 {
+    int com_port = 3;
+    com_port = settings->value("comm").toInt();
+    qDebug()<<"comm: "<<com_port;
     if (started)
         stop();
     else if (ui->checkBoxTimed->isChecked())
         delayStart(); // Reduce effect of tapping "Start" on the readings
-    else
-        start();
+    else{
+        cic_= std::make_shared<cic::CIC>(com_port);
+        int ret = cic_->connectSerial();
+        if(ret){
+            start();
+        }else{
+            char err[64];
+            sprintf_s(err, "COM%d is not connected.\n", com_port);
+            QMessageBox::critical(this, "Error", err);
+            stop();
+        }
+        start();   // sundy
+    }
 }
 
 void MainWindow::pressedAnalyze()
@@ -502,4 +568,9 @@ void MainWindow::writeFile(const QString& filename)
   }
 
   buttonEnable(ui->buttonSave, true);
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    cur_index_ = index;
 }

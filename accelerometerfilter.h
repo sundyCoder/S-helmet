@@ -69,6 +69,7 @@ class AccelerometerFilter
     bool newData;
     bool record;
     std::vector<AccelerometerReading> history;
+    int count;
 
 public:
 	AccelerometerFilter();
@@ -89,6 +90,7 @@ public:
     // the accelerometer without freezing the application
     void start();
     void stop();
+
 };
 
 #endif // ACCELEROMETERFILTER_H

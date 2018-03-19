@@ -76,6 +76,8 @@ class QCPColorMap;
 class QCPColorScale;
 class QCPBars;
 
+#define QT_NO_PRINTER
+
 
 /*! \file */
 

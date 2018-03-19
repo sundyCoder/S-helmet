@@ -17,6 +17,7 @@
  */
 
 #include "accelerometerfilter.h"
+#include <QDebug>
 
 AccelerometerFilter::AccelerometerFilter()
     : newData(false), record(false)
@@ -30,6 +31,7 @@ bool AccelerometerFilter::filter(QAccelerometerReading *qreading)
   if (record)
   {
     history.push_back(AccelerometerReading(qreading->x(), qreading->y(), qreading->z()));
+    //history.push_back(AccelerometerReading(x,y,z));
     newData = true;
   }
 
@@ -50,6 +52,7 @@ AccelerometerReadingDisplay AccelerometerFilter::get()
         return AccelerometerReadingDisplay();
 
     const AccelerometerReading& last = history.back();
+   // qDebug()<<"x:"<<last.x <<" y:"<<last.y<<" z:"<<last.z;
     AccelerometerReadingDisplay r(last.x, last.y, last.z, newData);
     newData = false;
     return r;

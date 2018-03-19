@@ -34,6 +34,10 @@
 #include <QInputDialog>
 #include "qcustomplot.h"
 #include "accelerometerfilter.h"
+#include "Serial/inc/cic.h"
+#include <memory>
+
+using namespace cic;
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +65,7 @@ private slots:
   void realtimeDataSlot();
   void finishSlot();
   void startSlot();
+  void on_comboBox_currentIndexChanged(int index);
 
 private:
   void start();
@@ -70,7 +75,7 @@ private:
   void buttonEnable(QPushButton* button, bool enabled);
 
 private:
-  QSettings settings;
+  QSettings* settings;
   bool first;
   bool started;
   Ui::MainWindow *ui;
@@ -80,6 +85,11 @@ private:
   QPalette button_enabled, button_disabled;
   QAccelerometer* accelerometer;
   AccelerometerFilter filter;
+
+  int cur_index_ = 0;
+
+public:
+    std::shared_ptr<CIC> cic_;
 };
 
 #endif // MAINWINDOW_H

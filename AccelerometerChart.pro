@@ -1,23 +1,33 @@
-QT       += core gui sensors
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = AccelerometerChart
+QT       += core gui sensors
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+
+TARGET = S-helmet
 TEMPLATE = app
+CONFIG += c++11
+
+#CONFIG += console
 
 SOURCES += main.cpp\
     mainwindow.cpp \
     qcustomplot.cpp \
-    accelerometerfilter.cpp
+    accelerometerfilter.cpp \
+    Serial/src/Serial.cpp \
+    Serial/src/TimeOut.cpp \
+    Serial/src/cic.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    accelerometerfilter.h
+    accelerometerfilter.h \
+    Serial/inc/TimeOut.h \
+    Serial/inc/cic.h \
+    Serial/inc/Serial.h
 
 FORMS    += mainwindow.ui
 
 winrt {
     WINRT_MANIFEST.version = 1.0.0.0
-    WINRT_MANIFEST.name = Accelerometer Chart
-    WINRT_MANIFEST.publisher = Solution Engineering, Inc.
-    WINRT_MANIFEST.description = A simple GPL strip chart accelerometer
+    WINRT_MANIFEST.name = S-helmet
+    WINRT_MANIFEST.publisher = sundycoder@gmail.com.
+    WINRT_MANIFEST.description = Accelerometer Chart
 }
