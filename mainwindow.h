@@ -65,7 +65,7 @@ private slots:
   void realtimeDataSlot();
   void finishSlot();
   void startSlot();
-  void on_comboBox_currentIndexChanged(int index);
+  //void on_comboBox_currentIndexChanged(int index);
 
 private:
   void start();
@@ -73,6 +73,7 @@ private:
   void stop();
   void writeFile(const QString& filename);
   void buttonEnable(QPushButton* button, bool enabled);
+  void initWindows();
 
 private:
   QSettings* settings;
@@ -80,13 +81,14 @@ private:
   bool started;
   Ui::MainWindow *ui;
   QTimer dataTimer;
+
   QTimer startTimer;
   QTimer finishTimer;
   QPalette button_enabled, button_disabled;
   QAccelerometer* accelerometer;
   AccelerometerFilter filter;
 
-  int cur_index_ = 0;
+  //int cur_index_ = 0;
 
 public:
     std::shared_ptr<CIC> cic_;

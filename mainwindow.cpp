@@ -30,15 +30,15 @@ MainWindow::MainWindow(QWidget *parent) :
   first(true),
   started(true)
 {
-  srand(QDateTime::currentDateTime().toTime_t());
+  srand(QDateTime::currentDateTime().toTime_t());   
   ui->setupUi(this);
 
   const QString configPath = "settings.ini";
   settings = new QSettings(configPath, QSettings::IniFormat, this);
   
+  //Customplot 1
   ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
-
 
 
   ui->customPlot->xAxis->setBasePen(QPen(Qt::white, 1));
@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot->xAxis->setDateTimeFormat("hh:mm:ss");
   ui->customPlot->xAxis->setAutoTickStep(false);
   ui->customPlot->xAxis->setTickStep(2);
-  ui->customPlot->xAxis->setLabel("Time");
+//  ui->customPlot->xAxis->setLabel("Time");
   ui->customPlot->xAxis->setLabelColor(Qt::white);
   ui->customPlot->xAxis->setLabelPadding(0);
   ui->customPlot->xAxis->setSelectableParts(QCPAxis::spAxis);
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot->setBackground(plotGradient);
 
   // X, Y, Z reading graphs
-  ui->customPlot->addGraph(); // blue line  
+  ui->customPlot->addGraph(); // blue line
   ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
   ui->customPlot->graph(0)->setName("X");
   ui->customPlot->graph(0)->setSelectable(false);
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
   // Scale in a particular direction when an axis is selected
   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
   connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
-  
+
   // Make bottom and left axes transfer their ranges to top and right axes:
   connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
   connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
@@ -119,14 +119,257 @@ MainWindow::MainWindow(QWidget *parent) :
   // Context menu popup
   ui->customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(ui->customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+  /******************************************************************/
+  ui->customPlot_1->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                                  QCP::iSelectLegend | QCP::iSelectPlottables);
 
-  // Buttons
+  ui->customPlot_1->xAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_1->yAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_1->xAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_1->yAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_1->xAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_1->yAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_1->xAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_1->yAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_1->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_1->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_1->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_1->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_1->xAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_1->yAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_1->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+  ui->customPlot_1->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+
+  // Axes
+  ui->customPlot_1->xAxis->setTickLabelType(QCPAxis::ltDateTime);
+  ui->customPlot_1->xAxis->setDateTimeFormat("hh:mm:ss");
+  ui->customPlot_1->xAxis->setAutoTickStep(false);
+  ui->customPlot_1->xAxis->setTickStep(2);
+  //ui->customPlot_1->xAxis->setLabel("Time");
+  ui->customPlot_1->xAxis->setLabelColor(Qt::white);
+  ui->customPlot_1->xAxis->setLabelPadding(0);
+  ui->customPlot_1->xAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_1->yAxis->setRange(-20, 20);
+  ui->customPlot_1->yAxis->setLabel("Acceleration (m/s^2)");
+  ui->customPlot_1->yAxis->setLabelColor(Qt::white);
+  ui->customPlot_1->yAxis->setLabelPadding(0);
+  ui->customPlot_1->yAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_1->axisRect()->setupFullAxesBox();
+
+  // Legend
+  ui->customPlot_1->legend->setVisible(true);
+  legendFont.setPointSize(10);
+  ui->customPlot_1->legend->setFont(legendFont);
+  ui->customPlot_1->legend->setSelectedFont(legendFont);
+  ui->customPlot_1->legend->setSelectableParts(QCPLegend::spNone);
+
+  plotGradient.setStart(0, 0);
+  plotGradient.setFinalStop(0, 350);
+  plotGradient.setColorAt(0, QColor(80, 80, 80));
+  plotGradient.setColorAt(1, QColor(50, 50, 50));
+  ui->customPlot_1->setBackground(plotGradient);
+
+  // X, Y, Z reading graphs
+  ui->customPlot_1->addGraph(); // blue line
+  ui->customPlot_1->graph(0)->setPen(QPen(Qt::blue));
+  ui->customPlot_1->graph(0)->setName("X");
+  ui->customPlot_1->graph(0)->setSelectable(false);
+  ui->customPlot_1->addGraph(); // red line
+  ui->customPlot_1->graph(1)->setPen(QPen(Qt::red));
+  ui->customPlot_1->graph(1)->setName("Y");
+  ui->customPlot_1->graph(1)->setSelectable(false);
+  ui->customPlot_1->addGraph(); // green line
+  ui->customPlot_1->graph(2)->setPen(QPen(Qt::green));
+  ui->customPlot_1->graph(2)->setName("Z");
+  ui->customPlot_1->graph(2)->setSelectable(false);
+
+  // Scale in a particular direction when an axis is selected
+  connect(ui->customPlot_1, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
+  connect(ui->customPlot_1, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
+
+  // Make bottom and left axes transfer their ranges to top and right axes:
+  connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_1->xAxis2, SLOT(setRange(QCPRange)));
+  connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_1->yAxis2, SLOT(setRange(QCPRange)));
+
+  // Adjust the tick marks on x-axis scale
+  connect(ui->customPlot_1->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+
+  // Context menu popup
+  ui->customPlot_1->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(ui->customPlot_1, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+  /******************************************************************/
+  ui->customPlot_2->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                                  QCP::iSelectLegend | QCP::iSelectPlottables);
+
+  ui->customPlot_2->xAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_2->yAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_2->xAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_2->yAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_2->xAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_2->yAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_2->xAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_2->yAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_2->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_2->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_2->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_2->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_2->xAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_2->yAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_2->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+  ui->customPlot_2->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+
+  // Axes
+  ui->customPlot_2->xAxis->setTickLabelType(QCPAxis::ltDateTime);
+  ui->customPlot_2->xAxis->setDateTimeFormat("hh:mm:ss");
+  ui->customPlot_2->xAxis->setAutoTickStep(false);
+  ui->customPlot_2->xAxis->setTickStep(2);
+//  ui->customPlot_2->xAxis->setLabel("Time");
+  ui->customPlot_2->xAxis->setLabelColor(Qt::white);
+  ui->customPlot_2->xAxis->setLabelPadding(0);
+  ui->customPlot_2->xAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_2->yAxis->setRange(-20, 20);
+  ui->customPlot_2->yAxis->setLabel("Acceleration (m/s^2)");
+  ui->customPlot_2->yAxis->setLabelColor(Qt::white);
+  ui->customPlot_2->yAxis->setLabelPadding(0);
+  ui->customPlot_2->yAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_2->axisRect()->setupFullAxesBox();
+
+  // Legend
+  ui->customPlot_2->legend->setVisible(true);
+  legendFont.setPointSize(10);
+  ui->customPlot_2->legend->setFont(legendFont);
+  ui->customPlot_2->legend->setSelectedFont(legendFont);
+  ui->customPlot_2->legend->setSelectableParts(QCPLegend::spNone);
+
+  plotGradient.setStart(0, 0);
+  plotGradient.setFinalStop(0, 350);
+  plotGradient.setColorAt(0, QColor(80, 80, 80));
+  plotGradient.setColorAt(1, QColor(50, 50, 50));
+  ui->customPlot_2->setBackground(plotGradient);
+
+  // X, Y, Z reading graphs
+  ui->customPlot_2->addGraph(); // blue line
+  ui->customPlot_2->graph(0)->setPen(QPen(Qt::blue));
+  ui->customPlot_2->graph(0)->setName("X");
+  ui->customPlot_2->graph(0)->setSelectable(false);
+  ui->customPlot_2->addGraph(); // red line
+  ui->customPlot_2->graph(1)->setPen(QPen(Qt::red));
+  ui->customPlot_2->graph(1)->setName("Y");
+  ui->customPlot_2->graph(1)->setSelectable(false);
+  ui->customPlot_2->addGraph(); // green line
+  ui->customPlot_2->graph(2)->setPen(QPen(Qt::green));
+  ui->customPlot_2->graph(2)->setName("Z");
+  ui->customPlot_2->graph(2)->setSelectable(false);
+
+  // Scale in a particular direction when an axis is selected
+  connect(ui->customPlot_2, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
+  connect(ui->customPlot_2, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
+
+  // Make bottom and left axes transfer their ranges to top and right axes:
+  connect(ui->customPlot_2->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_2->xAxis2, SLOT(setRange(QCPRange)));
+  connect(ui->customPlot_2->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_2->yAxis2, SLOT(setRange(QCPRange)));
+
+  // Adjust the tick marks on x-axis scale
+  connect(ui->customPlot_2->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+
+  // Context menu popup
+  ui->customPlot_2->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(ui->customPlot_2, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+  /******************************************************************/
+  ui->customPlot_3->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                                  QCP::iSelectLegend | QCP::iSelectPlottables);
+
+
+
+  ui->customPlot_3->xAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_3->yAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot_3->xAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_3->yAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot_3->xAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_3->yAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot_3->xAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_3->yAxis->setTickLabelColor(Qt::white);
+  ui->customPlot_3->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_3->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot_3->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_3->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot_3->xAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_3->yAxis->grid()->setSubGridVisible(true);
+  ui->customPlot_3->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+  ui->customPlot_3->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+
+  // Axes
+  ui->customPlot_3->xAxis->setTickLabelType(QCPAxis::ltDateTime);
+  ui->customPlot_3->xAxis->setDateTimeFormat("hh:mm:ss");
+  ui->customPlot_3->xAxis->setAutoTickStep(false);
+  ui->customPlot_3->xAxis->setTickStep(2);
+  ui->customPlot_3->xAxis->setLabel("Time");
+  ui->customPlot_3->xAxis->setLabelColor(Qt::white);
+  ui->customPlot_3->xAxis->setLabelPadding(0);
+  ui->customPlot_3->xAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_3->yAxis->setRange(-20, 20);
+  ui->customPlot_3->yAxis->setLabel("Acceleration (m/s^2)");
+  ui->customPlot_3->yAxis->setLabelColor(Qt::white);
+  ui->customPlot_3->yAxis->setLabelPadding(0);
+  ui->customPlot_3->yAxis->setSelectableParts(QCPAxis::spAxis);
+
+  ui->customPlot_3->axisRect()->setupFullAxesBox();
+
+  // Legend
+  ui->customPlot_3->legend->setVisible(true);
+  legendFont.setPointSize(10);
+  ui->customPlot_3->legend->setFont(legendFont);
+  ui->customPlot_3->legend->setSelectedFont(legendFont);
+  ui->customPlot_3->legend->setSelectableParts(QCPLegend::spNone);
+
+  plotGradient.setStart(0, 0);
+  plotGradient.setFinalStop(0, 350);
+  plotGradient.setColorAt(0, QColor(80, 80, 80));
+  plotGradient.setColorAt(1, QColor(50, 50, 50));
+  ui->customPlot_3->setBackground(plotGradient);
+
+  // X, Y, Z reading graphs
+  ui->customPlot_3->addGraph(); // blue line
+  ui->customPlot_3->graph(0)->setPen(QPen(Qt::blue));
+  ui->customPlot_3->graph(0)->setName("X");
+  ui->customPlot_3->graph(0)->setSelectable(false);
+  ui->customPlot_3->addGraph(); // red line
+  ui->customPlot_3->graph(1)->setPen(QPen(Qt::red));
+  ui->customPlot_3->graph(1)->setName("Y");
+  ui->customPlot_3->graph(1)->setSelectable(false);
+  ui->customPlot_3->addGraph(); // green line
+  ui->customPlot_3->graph(2)->setPen(QPen(Qt::green));
+  ui->customPlot_3->graph(2)->setName("Z");
+  ui->customPlot_3->graph(2)->setSelectable(false);
+
+  // Scale in a particular direction when an axis is selected
+  connect(ui->customPlot_3, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
+  connect(ui->customPlot_3, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
+
+  // Make bottom and left axes transfer their ranges to top and right axes:
+  connect(ui->customPlot_3->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_3->xAxis2, SLOT(setRange(QCPRange)));
+  connect(ui->customPlot_3->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot_3->yAxis2, SLOT(setRange(QCPRange)));
+
+  // Adjust the tick marks on x-axis scale
+  connect(ui->customPlot_3->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+
+  // Context menu popup
+  ui->customPlot_3->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(ui->customPlot_3, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+  /******************************************************************/
+
+  // Buttons  
   connect(ui->buttonStartStop, SIGNAL(released()), this, SLOT(pressedStartStop()));
-  connect(ui->buttonAnalyze, SIGNAL(released()), this, SLOT(pressedAnalyze()));
-  connect(ui->buttonSave, SIGNAL(released()), this, SLOT(pressedSave()));
+//  connect(ui->buttonAnalyze, SIGNAL(released()), this, SLOT(pressedAnalyze()));
+//  connect(ui->buttonSave, SIGNAL(released()), this, SLOT(pressedSave()));
 
   //Combox
-  connect(ui->comboBox, SIGNAL(currentIndexChanged(int index)), this, SLOT(on_comboBox_currentIndexChanged(int index)));
+  //connect(ui->comboBox, SIGNAL(currentIndexChanged(int index)), this, SLOT(on_comboBox_currentIndexChanged(int index)));
 
   // Setup accelerometer
   accelerometer = new QAccelerometer(this);
@@ -147,7 +390,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   // Load previous settings
   bool timed = settings->value("timed").toBool();
-  ui->checkBoxTimed->setChecked(timed);
+//  ui->checkBoxTimed->setChecked(timed);
 
   // When we start the application, either start it automatically if we're
   // not using a fixed period of time or set it up so we can press Start to
@@ -167,6 +410,7 @@ MainWindow::MainWindow(QWidget *parent) :
   // button when recording for set amount of time
   connect(&startTimer, SIGNAL(timeout()), this, SLOT(startSlot()));
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -195,26 +439,38 @@ void MainWindow::start()
 
   // Disable buttons
   buttonEnable(ui->buttonStartStop, true);
-  buttonEnable(ui->buttonAnalyze, false);
-  buttonEnable(ui->buttonSave, false);
-  ui->checkBoxTimed->setEnabled(false);
+//  buttonEnable(ui->buttonAnalyze, false);
+//  buttonEnable(ui->buttonSave, false);
+//  ui->checkBoxTimed->setEnabled(false);
   ui->buttonStartStop->setText("Stop");
 
   // Save the last used setting
-  settings->setValue("timed", ui->checkBoxTimed->isChecked());
+//  settings->setValue("timed", ui->checkBoxTimed->isChecked());
 
   // Clear old data
   ui->customPlot->graph(0)->removeDataAfter(0);
   ui->customPlot->graph(1)->removeDataAfter(0);
   ui->customPlot->graph(2)->removeDataAfter(0);
 
+  ui->customPlot_1->graph(0)->removeDataAfter(0);
+  ui->customPlot_1->graph(1)->removeDataAfter(0);
+  ui->customPlot_1->graph(2)->removeDataAfter(0);
+
+  ui->customPlot_2->graph(0)->removeDataAfter(0);
+  ui->customPlot_2->graph(1)->removeDataAfter(0);
+  ui->customPlot_2->graph(2)->removeDataAfter(0);
+
+  ui->customPlot_3->graph(0)->removeDataAfter(0);
+  ui->customPlot_3->graph(1)->removeDataAfter(0);
+  ui->customPlot_3->graph(2)->removeDataAfter(0);
+
   // Start the recording
   filter.start();
   dataTimer.start(0); // Interval 0 means to refresh as fast as possible
 
   // If checked, only run for a certain period of time
-  if (ui->checkBoxTimed->isChecked())
-    finishTimer.start(5*1000);
+//  if (ui->checkBoxTimed->isChecked())
+//    finishTimer.start(5*1000);
 }
 
 void MainWindow::delayStart()
@@ -223,9 +479,9 @@ void MainWindow::delayStart()
 
   // Disable all buttons until it starts running
   buttonEnable(ui->buttonStartStop, true);
-  buttonEnable(ui->buttonAnalyze, false);
-  buttonEnable(ui->buttonSave, false);
-  ui->checkBoxTimed->setEnabled(false);
+//  buttonEnable(ui->buttonAnalyze, false);
+//  buttonEnable(ui->buttonSave, false);
+//  ui->checkBoxTimed->setEnabled(false);
   ui->buttonStartStop->setText("Stop");
 
   // Delay 2 seconds
@@ -239,7 +495,6 @@ void MainWindow::stop()
   // Stop recording
   filter.stop();
   dataTimer.stop();
-  finishTimer.stop();
 
   // If not recording yet, cancel starting it soon
   startTimer.stop();
@@ -247,14 +502,14 @@ void MainWindow::stop()
   // Enable buttons
   ui->buttonStartStop->setText("Start");
   buttonEnable(ui->buttonStartStop, true);
-  buttonEnable(ui->buttonAnalyze, true);
-  buttonEnable(ui->buttonSave, true);
-  ui->checkBoxTimed->setEnabled(true);
+//  buttonEnable(ui->buttonAnalyze, true);
+//  buttonEnable(ui->buttonSave, true);
+//  ui->checkBoxTimed->setEnabled(true);
 
   // You'll probably be looking for these analysis values if you're using
   // the set time mode. And, make sure there's actually data to display.
-  if (ui->checkBoxTimed->isChecked() && !filter.empty())
-      pressedAnalyze();
+//  if (ui->checkBoxTimed->isChecked() && !filter.empty())
+//      pressedAnalyze();
 }
 
 void MainWindow::finishSlot()
@@ -281,8 +536,7 @@ void MainWindow::xAxisChanged(QCPRange range)
 void MainWindow::mousePress()
 {
   // if an axis is selected, only allow the direction of that axis to be dragged
-  // if no axis is selected, both directions may be dragged
-  
+  // if no axis is selected, both directions may be dragged  
   if (ui->customPlot->xAxis->selectedParts().testFlag(QCPAxis::spAxis))
     ui->customPlot->axisRect()->setRangeDrag(ui->customPlot->xAxis->orientation());
   else if (ui->customPlot->yAxis->selectedParts().testFlag(QCPAxis::spAxis))
@@ -290,6 +544,7 @@ void MainWindow::mousePress()
   else
     ui->customPlot->axisRect()->setRangeDrag(Qt::Horizontal|Qt::Vertical);
 }
+
 
 void MainWindow::mouseWheel()
 {
@@ -319,6 +574,7 @@ void MainWindow::contextMenuRequest(QPoint pos)
   }
 }
 
+
 void MainWindow::moveLegend()
 {
   if (QAction* contextAction = qobject_cast<QAction*>(sender())) // make sure this slot is really called by a context menu action, so it carries the data we need
@@ -333,6 +589,7 @@ void MainWindow::moveLegend()
   }
 }
 
+
 void MainWindow::realtimeDataSlot()
 {
   if (first)
@@ -340,9 +597,9 @@ void MainWindow::realtimeDataSlot()
     // These are here as well as in start() so that they actually do something
     // when the application is first started up.
     buttonEnable(ui->buttonStartStop, true);
-    buttonEnable(ui->buttonAnalyze, false);
-    buttonEnable(ui->buttonSave, false);
-    ui->checkBoxTimed->setEnabled(false);
+//    buttonEnable(ui->buttonAnalyze, false);
+//    buttonEnable(ui->buttonSave, false);
+//    ui->checkBoxTimed->setEnabled(false);
   }
 
   bool newData = false;
@@ -398,11 +655,25 @@ void MainWindow::realtimeDataSlot()
 //      //ui->customPlot->graph(2)->addData(key, reading.z);
 //    }
 
-    if(cur_index_ == 2){
+    //if(cur_index_ == 2){
         ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
         ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
         ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-    }
+
+        ui->customPlot_1->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+        ui->customPlot_1->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+        ui->customPlot_1->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
+
+
+        ui->customPlot_2->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+        ui->customPlot_2->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+        ui->customPlot_2->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
+
+
+        ui->customPlot_3->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+        ui->customPlot_3->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+        ui->customPlot_3->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
+    //}
     lastPointKey = key;
   }
 
@@ -411,12 +682,20 @@ void MainWindow::realtimeDataSlot()
     // make key axis range scroll with the data (at a constant range size of 8)
     // but only if we haven't scrolled to the left
     QCPRange xrange = ui->customPlot->xAxis->range();
-    if ((xrange.upper >= key-0.5 && xrange.upper <= key+0.5) || first)
-      ui->customPlot->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
+    if ((xrange.upper >= key-0.5 && xrange.upper <= key+0.5) || first){
+       ui->customPlot->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
+       ui->customPlot_1->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
+       ui->customPlot_2->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
+       ui->customPlot_3->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
+    }
     first = false;
 
     ui->customPlot->replot();
+    ui->customPlot_1->replot();
+    ui->customPlot_2->replot();
+    ui->customPlot_3->replot();
   }
+
 
   // Calculate frames per second and readings per second
   static double lastFpsKey = 0;
@@ -441,6 +720,7 @@ void MainWindow::realtimeDataSlot()
   }
 }
 
+
 void MainWindow::pressedStartStop()
 {
     int com_port = 3;
@@ -448,8 +728,8 @@ void MainWindow::pressedStartStop()
     qDebug()<<"comm: "<<com_port;
     if (started)
         stop();
-    else if (ui->checkBoxTimed->isChecked())
-        delayStart(); // Reduce effect of tapping "Start" on the readings
+//    else if (ui->checkBoxTimed->isChecked())
+//        delayStart(); // Reduce effect of tapping "Start" on the readings
     else{
         cic_= std::make_shared<cic::CIC>(com_port);
         int ret = cic_->connectSerial();
@@ -468,8 +748,8 @@ void MainWindow::pressedStartStop()
 void MainWindow::pressedAnalyze()
 {
     buttonEnable(ui->buttonStartStop, false);
-    buttonEnable(ui->buttonAnalyze, false);
-    buttonEnable(ui->buttonSave, false);
+//    buttonEnable(ui->buttonAnalyze, false);
+//    buttonEnable(ui->buttonSave, false);
 
     std::vector<AccelerometerReading> history = filter.getAll();
     QString msg;
@@ -535,15 +815,15 @@ void MainWindow::pressedAnalyze()
     m.exec();
 
     buttonEnable(ui->buttonStartStop, true);
-    buttonEnable(ui->buttonAnalyze, true);
-    buttonEnable(ui->buttonSave, true);
+//    buttonEnable(ui->buttonAnalyze, true);
+//    buttonEnable(ui->buttonSave, true);
 }
 
 void MainWindow::pressedSave()
 {
   buttonEnable(ui->buttonStartStop, false);
-  buttonEnable(ui->buttonAnalyze, false);
-  buttonEnable(ui->buttonSave, false);
+//  buttonEnable(ui->buttonAnalyze, false);
+//  buttonEnable(ui->buttonSave, false);
 
   // Note, at the moment we get the following message and this is empty.
   //   io\qstandardpaths_winrt.cpp:118: class QString __cdecl
@@ -561,13 +841,13 @@ void MainWindow::pressedSave()
 
   if (!filename.isEmpty())
   {
-    buttonEnable(ui->buttonSave, false);
+//    buttonEnable(ui->buttonSave, false);
     writeFile(filename);
   }
 
   buttonEnable(ui->buttonStartStop, true);
-  buttonEnable(ui->buttonAnalyze, true);
-  buttonEnable(ui->buttonSave, true);
+//  buttonEnable(ui->buttonAnalyze, true);
+//  buttonEnable(ui->buttonSave, true);
 }
 
 void MainWindow::writeFile(const QString& filename)
@@ -594,10 +874,10 @@ void MainWindow::writeFile(const QString& filename)
       m.exec();
   }
 
-  buttonEnable(ui->buttonSave, true);
+//  buttonEnable(ui->buttonSave, true);
 }
 
-void MainWindow::on_comboBox_currentIndexChanged(int index)
-{
-    cur_index_ = index;
-}
+//void MainWindow::on_comboBox_currentIndexChanged(int index)
+//{
+//    cur_index_ = index;
+//}
