@@ -39,17 +39,38 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
 
+
+
+  ui->customPlot->xAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot->yAxis->setBasePen(QPen(Qt::white, 1));
+  ui->customPlot->xAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot->yAxis->setTickPen(QPen(Qt::white, 1));
+  ui->customPlot->xAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot->yAxis->setSubTickPen(QPen(Qt::white, 1));
+  ui->customPlot->xAxis->setTickLabelColor(Qt::white);
+  ui->customPlot->yAxis->setTickLabelColor(Qt::white);
+  ui->customPlot->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+  ui->customPlot->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+  ui->customPlot->xAxis->grid()->setSubGridVisible(true);
+  ui->customPlot->yAxis->grid()->setSubGridVisible(true);
+  ui->customPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+  ui->customPlot->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+
   // Axes
   ui->customPlot->xAxis->setTickLabelType(QCPAxis::ltDateTime);
   ui->customPlot->xAxis->setDateTimeFormat("hh:mm:ss");
   ui->customPlot->xAxis->setAutoTickStep(false);
   ui->customPlot->xAxis->setTickStep(2);
   ui->customPlot->xAxis->setLabel("Time");
+  ui->customPlot->xAxis->setLabelColor(Qt::white);
   ui->customPlot->xAxis->setLabelPadding(0);
   ui->customPlot->xAxis->setSelectableParts(QCPAxis::spAxis);
 
   ui->customPlot->yAxis->setRange(-20, 20);
   ui->customPlot->yAxis->setLabel("Acceleration (m/s^2)");
+  ui->customPlot->yAxis->setLabelColor(Qt::white);
   ui->customPlot->yAxis->setLabelPadding(0);
   ui->customPlot->yAxis->setSelectableParts(QCPAxis::spAxis);
 
@@ -62,9 +83,16 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot->legend->setFont(legendFont);
   ui->customPlot->legend->setSelectedFont(legendFont);
   ui->customPlot->legend->setSelectableParts(QCPLegend::spNone);
-  
+
+  QLinearGradient plotGradient;
+  plotGradient.setStart(0, 0);
+  plotGradient.setFinalStop(0, 350);
+  plotGradient.setColorAt(0, QColor(80, 80, 80));
+  plotGradient.setColorAt(1, QColor(50, 50, 50));
+  ui->customPlot->setBackground(plotGradient);
+
   // X, Y, Z reading graphs
-  ui->customPlot->addGraph(); // blue line
+  ui->customPlot->addGraph(); // blue line  
   ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
   ui->customPlot->graph(0)->setName("X");
   ui->customPlot->graph(0)->setSelectable(false);
@@ -99,7 +127,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //Combox
   connect(ui->comboBox, SIGNAL(currentIndexChanged(int index)), this, SLOT(on_comboBox_currentIndexChanged(int index)));
-
 
   // Setup accelerometer
   accelerometer = new QAccelerometer(this);
