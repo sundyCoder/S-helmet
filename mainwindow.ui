@@ -239,7 +239,7 @@ color: black;
       <property name="midLineWidth">
        <number>0</number>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -256,7 +256,7 @@ color: black;
         <number>0</number>
        </property>
        <item>
-        <widget class="QCustomPlot" name="customPlot" native="true">
+        <widget class="QCustomPlot" name="customPlot_1" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -444,7 +444,7 @@ color: black;
         </widget>
        </item>
        <item>
-        <widget class="QCustomPlot" name="customPlot_1" native="true">
+        <widget class="QCustomPlot" name="customPlot" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -826,7 +826,7 @@ color: black;
       <property name="midLineWidth">
        <number>0</number>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -1031,7 +1031,7 @@ color: black;
         </widget>
        </item>
        <item>
-        <widget class="QCustomPlot" name="customPlot_3" native="true">
+        <widget class="QFrame" name="frame_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -1216,13 +1216,18 @@ color: black;
            </disabled>
           </palette>
          </property>
-         <zorder>buttonStartStop</zorder>
-         <zorder>buttonStartStop</zorder>
-         <zorder>frame_3</zorder>
-         <zorder>frame</zorder>
-         <zorder>buttonStartStop</zorder>
-         <zorder>buttonStartStop</zorder>
-         <zorder>frame</zorder>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QGraphicsView" name="graphicsView">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -1517,7 +1522,7 @@ color: black;
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header>qcustomplot.h</header>
+   <header location="global">qcustomplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

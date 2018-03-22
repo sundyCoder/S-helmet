@@ -29,6 +29,9 @@
 #include <QTextStream>
 #include <QMainWindow>
 #include <QStandardPaths>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsItem>
 #include <QtSensors/QAccelerometer>
 #include <QtSensors/QAccelerometerFilter>
 #include <QInputDialog>
@@ -81,14 +84,13 @@ private:
   bool started;
   Ui::MainWindow *ui;
   QTimer dataTimer;
+  int com_port_;
 
   QTimer startTimer;
   QTimer finishTimer;
   QPalette button_enabled, button_disabled;
   QAccelerometer* accelerometer;
   AccelerometerFilter filter;
-
-  //int cur_index_ = 0;
 
 public:
     std::shared_ptr<CIC> cic_;

@@ -26,7 +26,7 @@ namespace cic{
         return true;
     }
 
-    void CIC::getData(){
+    bool CIC::getData(){
         std::queue<char> dataBuff;
         static unsigned char incomingData[1000] = "";		// don't forget to pre-allocate memory
         static unsigned char incomingDataOut[1000] = "";
@@ -52,23 +52,29 @@ namespace cic{
                         dataBuff.pop();
                     }
                     memcpy((unsigned char *)(&bInfo), incomingDataOut + 2, sizeof(incomingDataOut)); // 7E 45 ID count X Y Z crc
-                    if (bInfo.id < 100){
+                    if (bInfo.id < 5 && bInfo.id > 0){
                         new_data_ = true;
                         //printf("%d,%d,%f,%f,%f\n", bInfo.id, bInfo.count, bInfo.ac_x, bInfo.ac_y, bInfo.ac_z);
                         if(bInfo.id == 1){
+                            curr_index = 1;
                             nodeInfo[0] = bInfo;
                         }else if(bInfo.id == 2){
+                            curr_index = 2;
                             nodeInfo[1] = bInfo;
                         }else if(bInfo.id == 3){
+                            curr_index = 3;
                             nodeInfo[2] = bInfo;
-                        }else if(bInfo.id == 4){
-                            nodeInfo[2] = bInfo;
+                        }else{
+                            curr_index = -1;
                         }
                     }
                 }
             }
+        }else{
+            return false;
         }
-    }
+        return true;
+    }    
 }
 
 

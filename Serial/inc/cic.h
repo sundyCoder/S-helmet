@@ -32,7 +32,7 @@ namespace cic{
 
     public:
         bool connectSerial();
-        void getData();
+        bool getData();
 
     public:
         int com_port_ = 10;
@@ -40,7 +40,8 @@ namespace cic{
         Serial* SP_;
 
     public:
-        Node nodeInfo[5];
+        Node nodeInfo[4];
+        int curr_index = -1;
         bool new_data_ = false;
     };
 }

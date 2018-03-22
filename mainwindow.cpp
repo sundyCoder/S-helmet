@@ -20,13 +20,14 @@
 #include "ui_mainwindow.h"
 #include "Serial/inc/cic.h"
 #include <QComboBox>
+#include <QGraphicsScene>
+#include <QGraphicsRectItem>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow),
-  cic_(nullptr),
+  //cic_(std::make_shared<CIC>(3)),
   settings(nullptr),
-  //settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation)+ QDir::separator() + "settings.ini", QSettings::IniFormat),
   first(true),
   started(true)
 {
@@ -36,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
   const QString configPath = "settings.ini";
   settings = new QSettings(configPath, QSettings::IniFormat, this);
   
+  int com_port = settings->value("comm").toInt();
+  cic_= std::make_shared<cic::CIC>(com_port);
+  cic_->connectSerial();
   //Customplot 1
   ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
@@ -280,6 +284,25 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot_2->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(ui->customPlot_2, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
   /******************************************************************/
+
+//  QGraphicsScene *scene;
+//  QGraphicsTextItem *text;
+
+
+  QGraphicsScene* scene = new QGraphicsScene(this);
+  QGraphicsPixmapItem *pixmapItem_ = new QGraphicsPixmapItem();
+  ui->graphicsView->setScene(scene);
+  QPen outlinePen(Qt::black);
+  outlinePen.setWidth(2);
+
+  QImage image("./img/lego.png");
+  pixmapItem_->setPixmap(QPixmap::fromImage(image));
+  scene->addItem(pixmapItem_);
+
+  QGraphicsTextItem* text = scene->addText("LEGO Bridge in Hong Kong", QFont("Arial", 20) );
+  text->setFlag(QGraphicsItem::ItemIsMovable);
+
+#if 0
   ui->customPlot_3->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
                                   QCP::iSelectLegend | QCP::iSelectPlottables);
 
@@ -361,6 +384,7 @@ MainWindow::MainWindow(QWidget *parent) :
   // Context menu popup
   ui->customPlot_3->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(ui->customPlot_3, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+#endif
   /******************************************************************/
 
   // Buttons  
@@ -408,13 +432,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   // Start with delay to reduce effect of touching the "Start"
   // button when recording for set amount of time
-  connect(&startTimer, SIGNAL(timeout()), this, SLOT(startSlot()));
+  connect(&startTimer, SIGNAL(timeout()), this, SLOT(startSlot())); 
 }
 
 
 MainWindow::~MainWindow()
 {
-  delete accelerometer;
+  delete accelerometer;  
   delete ui;
 }
 
@@ -460,9 +484,9 @@ void MainWindow::start()
   ui->customPlot_2->graph(1)->removeDataAfter(0);
   ui->customPlot_2->graph(2)->removeDataAfter(0);
 
-  ui->customPlot_3->graph(0)->removeDataAfter(0);
-  ui->customPlot_3->graph(1)->removeDataAfter(0);
-  ui->customPlot_3->graph(2)->removeDataAfter(0);
+//  ui->customPlot_3->graph(0)->removeDataAfter(0);
+//  ui->customPlot_3->graph(1)->removeDataAfter(0);
+//  ui->customPlot_3->graph(2)->removeDataAfter(0);
 
   // Start the recording
   filter.start();
@@ -501,7 +525,7 @@ void MainWindow::stop()
 
   // Enable buttons
   ui->buttonStartStop->setText("Start");
-  buttonEnable(ui->buttonStartStop, true);
+  buttonEnable(ui->buttonStartStop, true);  
 //  buttonEnable(ui->buttonAnalyze, true);
 //  buttonEnable(ui->buttonSave, true);
 //  ui->checkBoxTimed->setEnabled(true);
@@ -597,9 +621,6 @@ void MainWindow::realtimeDataSlot()
     // These are here as well as in start() so that they actually do something
     // when the application is first started up.
     buttonEnable(ui->buttonStartStop, true);
-//    buttonEnable(ui->buttonAnalyze, false);
-//    buttonEnable(ui->buttonSave, false);
-//    ui->checkBoxTimed->setEnabled(false);
   }
 
   bool newData = false;
@@ -608,72 +629,49 @@ void MainWindow::realtimeDataSlot()
 
   if (key-lastPointKey > 0.01) // at most add point every 10 ms
   {
-    //AccelerometerReadingDisplay reading = filter.get();
-    //newData = reading.newData;
-
     //added by sundy
-    //cic_->getData();
+    bool ret = cic_->getData();
+    if (cic_->new_data_){
+      Node* curr_node = new Node();
+      double x = curr_node->ac_x;
+      double y = curr_node->ac_y;
+      double z = curr_node->ac_z;
+      switch(cic_->curr_index){
+      case 1:
+          *curr_node = cic_->nodeInfo[0];
+          ui->customPlot->graph(0)->addData(key,x);
+          ui->customPlot->graph(1)->addData(key,y);
+          ui->customPlot->graph(2)->addData(key,z);
+          break;
+      case 2:
+          *curr_node = cic_->nodeInfo[1];
+          ui->customPlot_1->graph(0)->addData(key,x);
+          ui->customPlot_1->graph(1)->addData(key,y);
+          ui->customPlot_1->graph(2)->addData(key,z);
+          break;
+      case 3:
+          *curr_node = cic_->nodeInfo[2];
+          ui->customPlot_2->graph(0)->addData(key,x);
+          ui->customPlot_2->graph(1)->addData(key,y);
+          ui->customPlot_2->graph(2)->addData(key,z);
+          break;
+      default:
+          break;
+      }
+    }
+    else{
+//        ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+//        ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+//        ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
 
-    //if (reading.newData)
-//    if (cic_->new_data_){
-//      //get current node number
+//        ui->customPlot_1->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+//        ui->customPlot_1->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+//        ui->customPlot_1->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
 
-//      Node curr_node;
-//      curr_node.ac_x = 2;
-//      curr_node.ac_y = 4;
-//      curr_node.ac_z = 6;
-//      switch(cur_index_){
-//        case 0:
-//          curr_node = cic_->nodeInfo[0];
-//          break;
-//      case 1:
-//          curr_node = cic_->nodeInfo[1];
-//          break;
-//      case 2:
-//          curr_node = cic_->nodeInfo[2];
-//          break;
-//      case 3:
-//          curr_node = cic_->nodeInfo[3];
-//          break;
-//      case 4:
-//          curr_node = cic_->nodeInfo[4];
-//          break;
-//      }
-//      double x = curr_node.ac_x;
-//      double y = curr_node.ac_y;
-//      double z = curr_node.ac_z;
-//      ui->customPlot->graph(0)->addData(key,x);
-//      ui->customPlot->graph(1)->addData(key,y);
-//      ui->customPlot->graph(2)->addData(key,z);
-//    }else{
-
-//      ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-//      ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
-//      ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-//      //ui->customPlot->graph(0)->addData(key, reading.x);
-//      //ui->customPlot->graph(1)->addData(key, reading.y);
-//      //ui->customPlot->graph(2)->addData(key, reading.z);
-//    }
-
-    //if(cur_index_ == 2){
-        ui->customPlot->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-        ui->customPlot->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
-        ui->customPlot->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-
-        ui->customPlot_1->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-        ui->customPlot_1->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
-        ui->customPlot_1->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-
-
-        ui->customPlot_2->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-        ui->customPlot_2->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
-        ui->customPlot_2->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-
-
-        ui->customPlot_3->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-        ui->customPlot_3->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
-        ui->customPlot_3->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
-    //}
+//        ui->customPlot_2->graph(0)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
+//        ui->customPlot_2->graph(1)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*4*qSin(key/0.3843));
+//        ui->customPlot_2->graph(2)->addData(key,qSin(key)+qrand()/(double)RAND_MAX*6*qSin(key/0.3843));
+    }
     lastPointKey = key;
   }
 
@@ -686,14 +684,13 @@ void MainWindow::realtimeDataSlot()
        ui->customPlot->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
        ui->customPlot_1->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
        ui->customPlot_2->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
-       ui->customPlot_3->xAxis->setRange(key+0.25, xrange.upper-xrange.lower, Qt::AlignRight);
     }
     first = false;
 
     ui->customPlot->replot();
     ui->customPlot_1->replot();
     ui->customPlot_2->replot();
-    ui->customPlot_3->replot();
+//    ui->customPlot_3->replot();
   }
 
 
@@ -708,12 +705,16 @@ void MainWindow::realtimeDataSlot()
 
   if (key-lastFpsKey > 2) // average fps over 2 seconds
   {
-    ui->statusBar->showMessage(
-          QString("%1 FPS, %2 RPS, Readings: %3")
-          .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
-          .arg(readingCount/(key-lastFpsKey), 0, 'f', 0)
-          .arg(ui->customPlot->graph(0)->data()->count())
-          , 0);
+    //if(cic_->new_data_){
+        ui->statusBar->showMessage(
+              QString("%1 FPS, %2 RPS, Readings: %3, Status: %4")
+              .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
+              .arg(readingCount/(key-lastFpsKey), 0, 'f', 0)
+              .arg(ui->customPlot->graph(0)->data()->count())
+              , 0);
+    }else{
+        ui->statusBar->showMessage(QString("Status: No Data Received."), 0);
+    }
     lastFpsKey = key;
     frameCount = 0;
     readingCount = 0;
@@ -723,25 +724,25 @@ void MainWindow::realtimeDataSlot()
 
 void MainWindow::pressedStartStop()
 {
-    int com_port = 3;
-    com_port = settings->value("comm").toInt();
-    qDebug()<<"comm: "<<com_port;
     if (started)
         stop();
-//    else if (ui->checkBoxTimed->isChecked())
-//        delayStart(); // Reduce effect of tapping "Start" on the readings
-    else{
-        cic_= std::make_shared<cic::CIC>(com_port);
-        int ret = cic_->connectSerial();
+    else{        
+        bool ret = cic_->SP_->IsConnected();
+//        if(!ret){
+//            //cic_= std::make_shared<cic::CIC>(com_port);
+//            ret = cic_->connectSerial();
+//        }
+//        cic_= std::make_shared<cic::CIC>(com_port);
+//        int ret = cic_->connectSerial();
         if(ret){
             start();
         }else{
             char err[64];
-            sprintf_s(err, "COM%d is not connected.\n", com_port);
+            sprintf_s(err, "COM%d is not connected.\n", com_port_);
             QMessageBox::critical(this, "Error", err);
             stop();
         }
-        start();   // sundy
+        //start();   // sundy
     }
 }
 
