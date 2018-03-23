@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
   const QString configPath = "settings.ini";
   settings = new QSettings(configPath, QSettings::IniFormat, this);
   
-  int com_port = settings->value("comm").toInt();
-  cic_= std::make_shared<cic::CIC>(com_port);
+  this->com_port_ = settings->value("comm").toInt();
+  cic_= std::make_shared<cic::CIC>(com_port_);
   cic_->connectSerial();
   //Customplot 1
   ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
@@ -633,28 +633,44 @@ void MainWindow::realtimeDataSlot()
     bool ret = cic_->getData();
     if (cic_->new_data_){
       Node* curr_node = new Node();
-      double x = curr_node->ac_x;
-      double y = curr_node->ac_y;
-      double z = curr_node->ac_z;
       switch(cic_->curr_index){
       case 1:
+      {
           *curr_node = cic_->nodeInfo[0];
+          double x = curr_node->ac_x*10;
+          double y = curr_node->ac_y*10;
+          double z = curr_node->ac_z*10;
+          qDebug()<<"Info:"<<x<<","<<y<<","<<z;
           ui->customPlot->graph(0)->addData(key,x);
           ui->customPlot->graph(1)->addData(key,y);
           ui->customPlot->graph(2)->addData(key,z);
           break;
+       }
       case 2:
+          {
           *curr_node = cic_->nodeInfo[1];
-          ui->customPlot_1->graph(0)->addData(key,x);
-          ui->customPlot_1->graph(1)->addData(key,y);
-          ui->customPlot_1->graph(2)->addData(key,z);
+          double x2 = curr_node->ac_x*10;
+          double y2 = curr_node->ac_y*10;
+          double z2 = curr_node->ac_z*10;
+          qDebug()<<"Info:"<<x2<<","<<y2<<","<<z2;
+          ui->customPlot_1->graph(0)->addData(key,x2);
+          ui->customPlot_1->graph(1)->addData(key,y2);
+          ui->customPlot_1->graph(2)->addData(key,z2);
           break;
+          }
       case 3:
+        {
           *curr_node = cic_->nodeInfo[2];
-          ui->customPlot_2->graph(0)->addData(key,x);
-          ui->customPlot_2->graph(1)->addData(key,y);
-          ui->customPlot_2->graph(2)->addData(key,z);
+          double x3 = curr_node->ac_x*10;
+          double y3 = curr_node->ac_y*10;
+          double z3 = curr_node->ac_z*10;
+          qDebug()<<"Info:"<<x3<<","<<y3<<","<<z3;
+          ui->customPlot_2->graph(0)->addData(key,x3);
+          ui->customPlot_2->graph(1)->addData(key,y3);
+          ui->customPlot_2->graph(2)->addData(key,z3);
+
           break;
+          }
       default:
           break;
       }
@@ -705,7 +721,7 @@ void MainWindow::realtimeDataSlot()
 
   if (key-lastFpsKey > 2) // average fps over 2 seconds
   {
-    //if(cic_->new_data_){
+    if(cic_->new_data_){
         ui->statusBar->showMessage(
               QString("%1 FPS, %2 RPS, Readings: %3, Status: %4")
               .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
@@ -719,6 +735,7 @@ void MainWindow::realtimeDataSlot()
     frameCount = 0;
     readingCount = 0;
   }
+  cic_->new_data_ = false;
 }
 
 

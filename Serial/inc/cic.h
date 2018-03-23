@@ -20,7 +20,7 @@ namespace cic{
             float  ac_x;         //accelerator x
             float  ac_y;         //accelerator y
             float  ac_z;         //accelerator z
-            uint16_t crc16Res;     //checksum value
+            uint8_t crc8Res;     //checksum value
         }Node;
     #pragma pack(pop)
 
@@ -35,7 +35,7 @@ namespace cic{
         bool getData();
 
     public:
-        int com_port_ = 10;
+        int com_port_ = 3;
         int node_num_;
         Serial* SP_;
 
