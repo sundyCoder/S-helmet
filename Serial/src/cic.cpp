@@ -54,7 +54,7 @@ namespace cic{
                     memcpy((unsigned char *)(&bInfo), incomingDataOut + 2, sizeof(incomingDataOut)); // 7E 45 ID count X Y Z crc
                     if (bInfo.id < 5 && bInfo.id > 0){
                         new_data_ = true;
-                        printf("%d,%d,%f,%f,%f\n", bInfo.id, bInfo.count, bInfo.ac_x*10, bInfo.ac_y*10, bInfo.ac_z*10);
+                        //printf("%d,%d,%f,%f,%f\n", bInfo.id, bInfo.count, bInfo.ac_x*10, bInfo.ac_y*10, bInfo.ac_z*10);
                         if(bInfo.id == 1){
                             curr_index = 1;
                             nodeInfo[0].id = bInfo.id;

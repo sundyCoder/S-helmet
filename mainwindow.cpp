@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot->xAxis->setLabelPadding(0);
   ui->customPlot->xAxis->setSelectableParts(QCPAxis::spAxis);
 
-  ui->customPlot->yAxis->setRange(-20, 20);
+  ui->customPlot->yAxis->setRange(-16, 16);
   ui->customPlot->yAxis->setLabel("Acceleration (m/s^2)");
   ui->customPlot->yAxis->setLabelColor(Qt::white);
   ui->customPlot->yAxis->setLabelPadding(0);
@@ -154,7 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot_1->xAxis->setLabelPadding(0);
   ui->customPlot_1->xAxis->setSelectableParts(QCPAxis::spAxis);
 
-  ui->customPlot_1->yAxis->setRange(-20, 20);
+  ui->customPlot_1->yAxis->setRange(-16, 16);
   ui->customPlot_1->yAxis->setLabel("Acceleration (m/s^2)");
   ui->customPlot_1->yAxis->setLabelColor(Qt::white);
   ui->customPlot_1->yAxis->setLabelPadding(0);
@@ -234,7 +234,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot_2->xAxis->setLabelPadding(0);
   ui->customPlot_2->xAxis->setSelectableParts(QCPAxis::spAxis);
 
-  ui->customPlot_2->yAxis->setRange(-20, 20);
+  ui->customPlot_2->yAxis->setRange(-16, 16);
   ui->customPlot_2->yAxis->setLabel("Acceleration (m/s^2)");
   ui->customPlot_2->yAxis->setLabelColor(Qt::white);
   ui->customPlot_2->yAxis->setLabelPadding(0);
@@ -335,7 +335,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->customPlot_3->xAxis->setLabelPadding(0);
   ui->customPlot_3->xAxis->setSelectableParts(QCPAxis::spAxis);
 
-  ui->customPlot_3->yAxis->setRange(-20, 20);
+  ui->customPlot_3->yAxis->setRange(-16, 16);
   ui->customPlot_3->yAxis->setLabel("Acceleration (m/s^2)");
   ui->customPlot_3->yAxis->setLabelColor(Qt::white);
   ui->customPlot_3->yAxis->setLabelPadding(0);
@@ -640,7 +640,7 @@ void MainWindow::realtimeDataSlot()
           double x = curr_node->ac_x*10;
           double y = curr_node->ac_y*10;
           double z = curr_node->ac_z*10;
-          qDebug()<<"Info:"<<x<<","<<y<<","<<z;
+          //qDebug()<<"Info:"<<x<<","<<y<<","<<z;
           ui->customPlot->graph(0)->addData(key,x);
           ui->customPlot->graph(1)->addData(key,y);
           ui->customPlot->graph(2)->addData(key,z);
@@ -652,7 +652,7 @@ void MainWindow::realtimeDataSlot()
           double x2 = curr_node->ac_x*10;
           double y2 = curr_node->ac_y*10;
           double z2 = curr_node->ac_z*10;
-          qDebug()<<"Info:"<<x2<<","<<y2<<","<<z2;
+          //qDebug()<<"Info:"<<x2<<","<<y2<<","<<z2;
           ui->customPlot_1->graph(0)->addData(key,x2);
           ui->customPlot_1->graph(1)->addData(key,y2);
           ui->customPlot_1->graph(2)->addData(key,z2);
@@ -664,7 +664,7 @@ void MainWindow::realtimeDataSlot()
           double x3 = curr_node->ac_x*10;
           double y3 = curr_node->ac_y*10;
           double z3 = curr_node->ac_z*10;
-          qDebug()<<"Info:"<<x3<<","<<y3<<","<<z3;
+          //qDebug()<<"Info:"<<x3<<","<<y3<<","<<z3;
           ui->customPlot_2->graph(0)->addData(key,x3);
           ui->customPlot_2->graph(1)->addData(key,y3);
           ui->customPlot_2->graph(2)->addData(key,z3);
